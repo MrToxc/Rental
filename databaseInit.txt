@@ -1,0 +1,61 @@
+-- 1. TABLE CREATION
+
+-- Table 1: Car brands (ENUM implementation using CHECK constraint)
+CREATE TABLE brand (
+    id_brand INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(50) NOT NULL,
+    category VARCHAR(20) NOT NULL CHECK (category IN ('Economy', 'Standard', 'Luxury', 'SUV'))
+);
+
+-- Table 2: Cars (FLOAT and BIT used instead of boolean)
+CREATE TABLE car (
+    id_car INT IDENTITY(1,1) PRIMARY KEY,
+    license_plate VARCHAR(10) NOT NULL UNIQUE,
+    model VARCHAR(50) NOT NULL,
+    price_per_day FLOAT NOT NULL,          -- Real number
+    is_available BIT DEFAULT 1,            -- Logical value (1 = true, 0 = false)
+    id_brand INT FOREIGN KEY REFERENCES brand(id_brand)
+);
+
+-- Table 3: Customers
+CREATE TABLE customer (
+    id_customer INT IDENTITY(1,1) PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    registration_date DATE DEFAULT GETDATE() -- Date
+);
+
+-- Table 4: Contracts
+CREATE TABLE contract (
+    id_contract INT IDENTITY(1,1) PRIMARY KEY,
+    contract_number VARCHAR(20) NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(), -- Time
+    id_customer INT FOREIGN KEY REFERENCES customer(id_customer),
+    total_price FLOAT DEFAULT 0
+);
+
+-- Table 5: Junction table for M:N relationship (Contract <-> Car)
+CREATE TABLE contract_car (
+    id_contract INT FOREIGN KEY REFERENCES contract(id_contract) ON DELETE CASCADE,
+    id_car INT FOREIGN KEY REFERENCES car(id_car),
+    date_from DATE NOT NULL,
+    date_to DATE NOT NULL,
+    CONSTRAINT PK_contract_car PRIMARY KEY (id_contract, id_car)
+);
+GO
+
+-- 2. VIEW CREATION
+
+CREATE VIEW view_available_cars AS
+SELECT c.license_plate, c.model, b.name AS brand, c.price_per_day
+FROM car c
+JOIN brand b ON c.id_brand = b.id_brand
+WHERE c.is_available = 1;
+GO
+
+CREATE VIEW view_car_usage AS
+SELECT c.model, COUNT(cc.id_car) AS rental_count
+FROM car c
+LEFT JOIN contract_car cc ON c.id_car = cc.id_car
+GROUP BY c.model;
+GO
