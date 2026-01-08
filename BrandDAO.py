@@ -1,7 +1,10 @@
 import database
 from Brand import Brand
 
+
 class BrandDAO:
+
+    TABLE_NAME = "brand"
 
     @staticmethod
     def get_all():
@@ -15,20 +18,9 @@ class BrandDAO:
 
     @staticmethod
     def insert(brand):
-        with database.get_db_connection() as connection:
-            cursor = connection.cursor()
-            sql = "INSERT INTO brand (name, category) OUTPUT INSERTED.id_brand VALUES (?, ?)"
-            cursor.execute(sql, (brand.name, brand.category))
-
-            brand.id_brand = cursor.fetchone()[0]
-            connection.commit()
-
+        brand.id_brand = database.insert(BrandDAO.TABLE_NAME, brand)
 
     @staticmethod
     def delete(id_brand):
-        with database.get_db_connection() as connection:
-            cursor = connection.cursor()
-            sql = "DELETE FROM brand WHERE id_brand = ?"
-            cursor.execute(sql, (id_brand,))
-            connection.commit()
-            return cursor.rowcount > 0
+        return database.delete(BrandDAO.TABLE_NAME, id_brand)
+

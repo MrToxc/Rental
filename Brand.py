@@ -5,4 +5,3 @@ class Brand:
     name: str
     category: str
     id_brand: int = None
-

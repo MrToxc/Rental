@@ -1,14 +1,10 @@
 import json
 import os
+from dataclasses import asdict
+
 import pyodbc
 
-connection = None
-
 def get_db_connection():
-    global connection
-
-    if connection:
-        return connection
     config_path = 'config.json'
     if not os.path.exists(config_path):
         raise Exception("Soubor config.json neexistuje! Vytvořte ho podle config.example.json.")
@@ -24,5 +20,32 @@ def get_db_connection():
         f"PWD={config['pwd']}"
     )
 
-    connection = pyodbc.connect(conn_str)
-    return connection
+    return pyodbc.connect(conn_str)
+
+def insert(table, obj):
+    record = asdict(obj)
+    record.pop(f"id_{table}", None)
+
+    with get_db_connection() as connection:
+        cursor = connection.cursor()
+        attributes = ", ".join(record.keys())
+        question_marks = ", ".join(["?"] * len(record.keys()))
+
+        sql = f"INSERT INTO {table} ({attributes}) OUTPUT INSERTED.id_{table} VALUES ({question_marks})"
+        cursor.execute(sql, *record.values())
+
+        id_record = cursor.fetchone()[0]
+        connection.commit()
+        return id_record
+
+def delete(table, id_record):
+    with get_db_connection() as connection:
+        cursor = connection.cursor()
+        sql = f"DELETE FROM {table} WHERE id_{table} = ?"
+        cursor.execute(sql, id_record)
+        connection.commit()
+        return cursor.rowcount > 0
+
+
+def update(TABLE_NAME, obj):
+    return None
