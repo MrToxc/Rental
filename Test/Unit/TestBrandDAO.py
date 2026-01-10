@@ -18,7 +18,7 @@ class TestBrandDAO(unittest.TestCase):
             self.assertTrue(brand in BrandDAO.get_all())
             self.assertTrue(brand == BrandDAO.get_by_id(brand.id_brand))
         finally:
-            BrandDAO.delete(brand.id_brand)
+            BrandDAO.delete(brand)
         self.assertTrue(brand not in brands)
         brand.name = "Toyota"
         self.assertFalse(brand in BrandDAO.get_all())

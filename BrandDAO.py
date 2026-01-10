@@ -4,24 +4,22 @@ from Brand import Brand
 
 class BrandDAO:
 
-    TABLE_NAME = "brand"
-
     @staticmethod
     def get_all():
-        return database.get_all_as_objects(BrandDAO.TABLE_NAME, Brand)
+        return database.get_all_as_objects(Brand)
 
     @staticmethod
     def get_by_id(id_brand):
-        return database.get_by_id_as_object(BrandDAO.TABLE_NAME, id_brand, Brand)
+        return database.get_by_id_as_object(Brand, id_brand)
 
     @staticmethod
     def insert(brand):
-        brand.id_brand = database.insert(BrandDAO.TABLE_NAME, brand)
+        brand.id_brand = database.insert(brand)
 
     @staticmethod
-    def delete(id_brand):
-        return database.delete(BrandDAO.TABLE_NAME, id_brand)
+    def delete(brand):
+        return database.delete(brand)
 
     @staticmethod
     def update(brand):
-        return database.update(BrandDAO.TABLE_NAME, brand)
+        return database.update(brand)

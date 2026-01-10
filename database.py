@@ -23,11 +23,14 @@ def get_db_connection():
     return pyodbc.connect(conn_str)
 
 
-def get_by_id(table, id_record):
+def get_by_id(data_class, id_record):
+    table = get_table_from_data_class(data_class)
+    id_attribute_name = get_id_attribute_name_from_data_class(data_class)
+
     with get_db_connection() as connection:
         cursor = connection.cursor()
 
-        sql = f"SELECT * FROM {table} WHERE {attribute_id_name(table)} = ?"
+        sql = f"SELECT * FROM {table} WHERE {id_attribute_name} = ?"
         cursor.execute(sql, id_record)
 
         row = cursor.fetchone()
@@ -39,14 +42,15 @@ def get_by_id(table, id_record):
         columns = [column[0] for column in cursor.description]
         return dict(zip(columns, row))
 
-def get_by_id_as_object(table, id_record, obj):
-    data = get_by_id(table, id_record)
+def get_by_id_as_object(data_class, id_record):
+    data = get_by_id(data_class, id_record)
     if data:
-        return obj(**data)
+        return data_class(**data)
     return None
 
 
-def get_all(table):
+def get_all(data_class):
+    table = get_table_from_data_class(data_class)
     with get_db_connection() as connection:
         cursor = connection.cursor()
         sql = f"SELECT * FROM {table}"
@@ -62,7 +66,8 @@ def get_all(table):
 
         return results
 
-def get_all_as_objects(table, data_class):
+def get_all_as_objects(data_class):
+    table = get_table_from_data_class(data_class)
     with get_db_connection() as connection:
         cursor = connection.cursor()
         sql = f"SELECT * FROM {table}"
@@ -77,9 +82,11 @@ def get_all_as_objects(table, data_class):
 
         return results
 
-def insert(table, obj):
-    record = asdict(obj)
-    record.pop(attribute_id_name(table), None)
+def insert(data_object):
+    table = get_table_from_data_object(data_object)
+    id_attribute_name = get_id_attribute_name_from_data_object(data_object)
+    record = asdict(data_object)
+    record.pop(id_attribute_name, None)
 
     with get_db_connection() as connection:
         attributes = ", ".join(record.keys())
@@ -93,26 +100,33 @@ def insert(table, obj):
         connection.commit()
         return id_record
 
-def delete(table, id_record):
+def delete(data_object):
+    table = get_table_from_data_object(data_object)
+    id_attribute_name = get_id_attribute_name_from_data_object(data_object)
+    id_record = getattr(data_object, id_attribute_name)
+
     with get_db_connection() as connection:
         cursor = connection.cursor()
-        sql = f"DELETE FROM {table} WHERE {attribute_id_name(table)} = ?"
+        sql = f"DELETE FROM {table} WHERE {id_attribute_name} = ?"
         cursor.execute(sql, id_record)
         connection.commit()
         return cursor.rowcount > 0
 
 
-def update(table, obj):
-    record = asdict(obj)
+def update(data_object):
+    record = asdict(data_object)
+    id_attribute_name = get_id_attribute_name_from_data_object(data_object)
     # Získáme hodnotu ID pro podmínku WHERE a následně ji odstraníme z dat k updatu
-    if attribute_id_name(table) not in record:
-        raise ValueError(f"Objekt neobsahuje primární klíč {attribute_id_name(table)}")
+    if id_attribute_name not in record:
+        raise ValueError(f"Objekt neobsahuje primární klíč {id_attribute_name}")
 
-    id_record = record.pop(attribute_id_name(table))
+    id_record = record.pop(id_attribute_name)
     attributes_and_values = ", ".join([f"{key} = ?" for key in record.keys()])
 
+    table = get_table_from_data_object(data_object)
+
     with get_db_connection() as connection:
-        sql = f"UPDATE {table} SET {attributes_and_values} WHERE {attribute_id_name(table)} = ?"
+        sql = f"UPDATE {table} SET {attributes_and_values} WHERE {id_attribute_name} = ?"
 
         values = list(record.values())
         values.append(id_record)
@@ -123,5 +137,17 @@ def update(table, obj):
         connection.commit()
 
 
-def attribute_id_name(table) -> str:
+def get_table_from_data_object(data_object) -> str:
+    return get_table_from_data_class(type(data_object))
+
+def get_table_from_data_class(data_class) -> str:
+    return data_class.__name__.lower()
+
+def get_id_attribute_name_from_data_object(data_object) -> str:
+    return get_id_attribute_name_from_data_class(type(data_object))
+
+def get_id_attribute_name_from_data_class(data_class) -> str:
+    return get_id_attribute_name_from_table(get_table_from_data_class(data_class))
+
+def get_id_attribute_name_from_table(table) -> str:
     return f"id_{table}"
