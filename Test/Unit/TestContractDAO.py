@@ -1,10 +1,9 @@
 import unittest
 
-from Objects.Customer import Customer
-from DAO.CustomerDAO import CustomerDAO
 from DAO.ContractDAO import ContractDAO
+from DAO.CustomerDAO import CustomerDAO
 from Objects.Contract import Contract
-
+from Objects.Customer import Customer
 
 class TestContractDAO(unittest.TestCase):
 

@@ -1,4 +1,5 @@
 import unittest
+
 from DAO.BrandDAO import BrandDAO
 from Objects.Brand import Brand
 

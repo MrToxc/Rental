@@ -1,8 +1,8 @@
 import unittest
 
-from Objects.Brand import Brand
 from DAO.BrandDAO import BrandDAO
 from DAO.CarDAO import CarDAO
+from Objects.Brand import Brand
 from Objects.Car import Car
 
 

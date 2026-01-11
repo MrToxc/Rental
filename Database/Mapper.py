@@ -1,26 +1,6 @@
-import json
-import os
 from dataclasses import asdict
 
-import pyodbc
-
-def get_db_connection():
-    config_path = 'config.json'
-    if not os.path.exists(config_path):
-        raise Exception("Soubor config.json neexistuje! Vytvořte ho podle config.example.json.")
-
-    with open(config_path, 'r') as f:
-        config = json.load(f)
-
-    conn_str = (
-        f"DRIVER={config['driver']};"
-        f"SERVER={config['server']};"
-        f"DATABASE={config['database']};"
-        f"UID={config['uid']};"
-        f"PWD={config['pwd']}"
-    )
-
-    return pyodbc.connect(conn_str)
+from Database.Database import get_db_connection
 
 
 def get_by_id(data_class, id_record):
@@ -42,12 +22,12 @@ def get_by_id(data_class, id_record):
         columns = [column[0] for column in cursor.description]
         return dict(zip(columns, row))
 
+
 def get_by_id_as_object(data_class, id_record):
     data = get_by_id(data_class, id_record)
     if data:
         return data_class(**data)
     return None
-
 
 def get_all(data_class):
     table = get_table_from_data_class(data_class)
