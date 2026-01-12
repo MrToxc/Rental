@@ -1,8 +1,9 @@
 import json
 import os
-from pathlib import Path
 
 import pyodbc
+
+from Database.Config import find_config
 
 
 def get_db_connection():
@@ -22,15 +23,4 @@ def get_db_connection():
     )
     return pyodbc.connect(conn_str)
 
-def find_config():
-    current_path = Path(__file__).resolve().parent
 
-    for parent in [current_path] + list(current_path.parents):
-        config_path = parent / "rental_config.json"
-        if config_path.exists():
-            return config_path
-
-    raise FileNotFoundError("Could not find config.json in any parent directory.")
-
-def find_root():
-    return Path(find_config()).resolve().parent

@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from Database.Database import find_root
+from Database.Config import find_root, find_config
 
 
 class TestDatabase(unittest.TestCase):
@@ -12,6 +12,8 @@ class TestDatabase(unittest.TestCase):
         self.assertTrue(Path(root).resolve().is_dir())
         self.assertTrue(Path(root / "rental_config.json").exists())
 
+    def test_find_config(self):
+        self.assertTrue(Path(find_config()).exists())
 
 if __name__ == '__main__':
     unittest.main()

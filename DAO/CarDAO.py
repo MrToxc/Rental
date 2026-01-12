@@ -28,3 +28,13 @@ class CarDAO:
     @staticmethod
     def get_brand(car):
         return BrandDAO.get_by_id(id_brand=car.id_brand)
+
+    @staticmethod
+    def insert_all(cars):
+        for car in cars:
+            insert(cars)
+
+    @staticmethod
+    def delete_all(cars):
+        for brand in cars:
+            delete(cars)

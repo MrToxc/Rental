@@ -1,0 +1,11 @@
+id_brand,name,category
+1,Škoda,Economy
+2,Hyundai,Economy
+3,Volkswagen,Standard
+4,Toyota,Standard
+5,Ford,Standard
+6,BMW,Luxury
+7,Mercedes-Benz,Luxury
+8,Audi,Luxury
+9,Volvo,SUV
+10,Kia,SUV

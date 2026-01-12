@@ -1,0 +1,11 @@
+id_car,license_plate,model,price_per_day,is_available,id_brand
+1,1AB2345,Fabia 1.0 TSI,32.0,1,1
+2,2BC3456,i20 1.2,30.0,1,2
+3,3CD4567,Golf 1.5 TSI,45.0,0,3
+4,4DE5678,Corolla 1.8 Hybrid,48.0,1,4
+5,5EF6789,Focus 1.0 EcoBoost,40.0,1,5
+6,6FG7890,320i,85.0,1,6
+7,7GH8901,C 200,90.0,0,7
+8,8HJ9012,A4 40 TFSI,88.0,1,8
+9,9JK0123,XC60 B5,95.0,1,9
+10,0KL1234,Sportage 1.6 T-GDI,70.0,1,10

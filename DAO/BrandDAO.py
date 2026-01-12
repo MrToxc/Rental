@@ -23,3 +23,13 @@ class BrandDAO:
     @staticmethod
     def update(brand):
         return update(brand)
+
+    @staticmethod
+    def insert_all(brands):
+        for brand in brands:
+            insert(brand)
+
+    @staticmethod
+    def delete_all(brands):
+        for brand in brands:
+            delete(brand)
