@@ -66,6 +66,11 @@ Obsah souboru:
 
 ## Spuštění aplikace
 
+Automatizované testy pro kontrolu spusť příkazem:
+```bash
+python -m unittest discover -s Test\Unit -p "Test*.py" -t
+```
+
 Aplikaci spusť příkazem:
 ```bash
 python App.py

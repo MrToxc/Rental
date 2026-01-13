@@ -31,8 +31,9 @@ def create_db_connection():
     )
     return pyodbc.connect(conn_str)
 
-
-class ConnectionDecorator:
+# Umožňuje udělat transakce přes libovolý počet operací.
+# Používá se tak, že se nastaví do global_connection
+class LongConnection:
 
     connection = create_db_connection()
 

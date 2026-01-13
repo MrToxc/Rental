@@ -205,7 +205,7 @@ def rent_a_car() -> None:
     - insert into contract_car
     - update car.is_available = 0
     """
-    DB.global_connection = DB.ConnectionDecorator()
+    DB.global_connection = DB.LongConnection()
     try:
         rent_a_car_inner()
     except Exception as e:

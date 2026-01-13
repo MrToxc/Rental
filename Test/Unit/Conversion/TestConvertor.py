@@ -5,6 +5,7 @@ from Conversion.Convertor import convert_csv_to_data_objects, correct_brand_id, 
 from DAO.BrandDAO import BrandDAO
 from DAO.CarDAO import CarDAO
 from DAO.CustomerDAO import CustomerDAO
+from Database import DB
 from Database.Config import find_file
 from Objects.Brand import Brand
 from Objects.Car import Car
@@ -19,7 +20,7 @@ class TestConvertor(unittest.TestCase):
 
         brands = convert_csv_to_data_objects(brand_csv, Brand)
         self.assertTrue(len(brands) == 10)
-        self.assertTrue(brands[0].id_brand is "1")
+        self.assertTrue(brands[0].id_brand == "1")
         self.assertTrue(brands[0].name == "Škoda")
 
     def test_convert_csv_to_car(self):
@@ -37,6 +38,19 @@ class TestConvertor(unittest.TestCase):
         self.assertTrue(len(customers) == 10)
 
     def test_insert_delete_cars_using_csv(self):
+        DB.global_connection = DB.LongConnection()
+        try:
+            self.insert_delete_cars_using_csv()
+        except Exception as e:
+            DB.global_connection.really_rollback()
+            raise RuntimeError(f"Chyba transakce': {str(e)}") from e
+        else:
+            DB.global_connection.really_commit()
+        finally:
+            DB.global_connection.really_close()
+            DB.global_connection = None
+
+    def insert_delete_cars_using_csv(self):
         brand_csv = find_file("Test/TestData/brand.csv")
         brands = convert_csv_to_data_objects(brand_csv, Brand)
 
@@ -50,7 +64,6 @@ class TestConvertor(unittest.TestCase):
             BrandDAO.delete_all(brands)
 
         self.assertTrue(brand_count is len(BrandDAO.get_all()))
-
 
 
     def cars_test(self, brands):
