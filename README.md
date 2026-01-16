@@ -68,7 +68,7 @@ Obsah souboru:
 
 Automatizované testy pro kontrolu spusť příkazem:
 ```bash
-python -m unittest discover -s Test\Unit -p "Test*.py" -t
+python -m unittest discover -s Test\Unit -p "Test*.py" -t .
 ```
 
 Aplikaci spusť příkazem:
